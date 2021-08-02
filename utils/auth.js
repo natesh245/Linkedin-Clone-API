@@ -12,8 +12,8 @@ async function hashPassword(password) {
   }
 }
 
-async function generateToken(userDoc) {
-  const token = jwt.sign({ ...userDoc, password: null }, "secret", {
+async function generateToken(payload) {
+  const token = jwt.sign({ ...payload, password: null }, "secret", {
     expiresIn: "2h",
   });
 
