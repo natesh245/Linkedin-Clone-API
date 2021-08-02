@@ -49,9 +49,10 @@ router.post("/register", async (req, res) => {
     user.password = hashedPassword;
     const savedUser = await user.save();
 
-    const token = jwt.sign({ ...savedUser._doc, password: null }, "secret", {
-      expiresIn: "2h",
-    });
+    // const token = jwt.sign({ ...savedUser._doc, password: null }, "secret", {
+    //   expiresIn: "2h",
+    // });
+    const token = await generateToken(savedUser._doc);
     // save user token
     savedUser._doc.token = token;
 
@@ -74,15 +75,15 @@ router.post("/login", async (req, res) => {
     const match = await bcrypt.compare(password, existingUser.password);
 
     if (match) {
-      const token = await jwt.sign(
-        { ...existingUser._doc, password: null },
-        "secret",
-        {
-          expiresIn: "2h",
-        }
-      );
+      // const token = await jwt.sign(
+      //   { ...existingUser._doc, password: null },
+      //   "secret",
+      //   {
+      //     expiresIn: "2h",
+      //   }
+      // );
 
-      // const token = generateToken(existingUser._doc);
+      const token = await generateToken(existingUser._doc);
 
       res.status(200).send({ ...existingUser._doc, token });
     } else {

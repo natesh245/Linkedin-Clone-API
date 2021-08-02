@@ -12,14 +12,15 @@ async function hashPassword(password) {
   }
 }
 
-function generateToken(userDoc) {
+async function generateToken(userDoc) {
   const token = jwt.sign({ ...userDoc, password: null }, "secret", {
     expiresIn: "2h",
   });
+
   return token;
 }
 
-exports = {
+module.exports = {
   hashPassword,
   generateToken,
 };
