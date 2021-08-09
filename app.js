@@ -2,6 +2,9 @@ require("dotenv").config();
 require("./config/database").dbConnect();
 
 const userRoute = require("./routes/user");
+const profileRoute = require("./routes/profile");
+
+const verifyToken = require("./middlewares/auth");
 
 const express = require("express");
 
@@ -15,5 +18,6 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/user", userRoute);
+app.use("/api/profile", verifyToken, profileRoute);
 
 module.exports = app;
