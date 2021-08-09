@@ -45,17 +45,10 @@ router.post("/register", async (req, res) => {
     const user = new User(body);
     const salt = await bcrypt.genSalt(saltRounds);
     const hashedPassword = await bcrypt.hash(user.password, salt);
-    // const hashedPassword = await hashPassword(user.password);
     user.password = hashedPassword;
     const savedUser = await user.save();
-
-    // const token = jwt.sign({ ...savedUser._doc, password: null }, "secret", {
-    //   expiresIn: "2h",
-    // });
     const token = await generateToken(savedUser._doc);
-    // save user token
     savedUser._doc.token = token;
-
     res.send({ ...savedUser._doc, password: null });
   } catch (error) {
     return res.status(500).json(error);
@@ -75,16 +68,7 @@ router.post("/login", async (req, res) => {
     const match = await bcrypt.compare(password, existingUser.password);
 
     if (match) {
-      // const token = await jwt.sign(
-      //   { ...existingUser._doc, password: null },
-      //   "secret",
-      //   {
-      //     expiresIn: "2h",
-      //   }
-      // );
-
       const token = await generateToken(existingUser._doc);
-
       res.status(200).send({ ...existingUser._doc, token });
     } else {
       res.send("wrong credentials");
