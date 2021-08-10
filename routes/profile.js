@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const Profile = require("../models/profile");
+const isUserAuthorized = require("../middlewares/profile");
 
 router.get("/", async (req, res) => {
   try {
@@ -11,14 +12,9 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/:id", async (req, res) => {
+router.get("/:profileId", isUserAuthorized, async (req, res) => {
   try {
-    const profileId = req.params.id;
-    const profile = await Profile({ _id: profileId });
-    if ((!req?.user?.isAdmin && profile) || profile.user !== req?.user?._id)
-      return res.status(401).send("Not Authorized");
-
-    res.status(200).send(profile);
+    res.status(200).send(req.profile);
   } catch (error) {
     res.status(500).send(error);
   }
@@ -27,27 +23,27 @@ router.get("/:id", async (req, res) => {
 router.post("/:userId", async (req, res) => {
   try {
     const userId = req.params.userId;
+    const existingUserProfile = await Profile.findOne({ user: userId }).lean();
+    if (existingUserProfile)
+      return res.status(403).send("Profile already exists");
     const userProfile = new Profile({
       user: userId,
       ...req.body,
     });
-    userProfile.save();
+    const savedProfile = await userProfile.save();
+    res.status(201).send(savedProfile);
   } catch (error) {
     res.status(500).send(error);
   }
 });
 
-router.put("/:profileId", async (req, res) => {
+router.put("/:profileId", isUserAuthorized, async (req, res) => {
   try {
     const profileId = req.params.profileId;
-
-    const profile = await Profile({ _id: profileId });
-    if ((!req?.user?.isAdmin && profile) || profile.user !== req?.user?._id)
-      return res.status(401).send("Not Authorized");
     const updatedProfile = await Profile.updateOne(
       { _id: profileId },
       { ...req.body },
-      { upsert: true, useFindAndModify: true }
+      { useFindAndModify: true }
     );
     res.status(201).send(updatedProfile);
   } catch (error) {
@@ -55,13 +51,9 @@ router.put("/:profileId", async (req, res) => {
   }
 });
 
-router.delete("/:profileId", async (req, res) => {
+router.delete("/:profileId", isUserAuthorized, async (req, res) => {
   try {
     const profileId = req.params.profileId;
-
-    const profile = await Profile({ _id: profileId });
-    if ((!req?.user?.isAdmin && profile) || profile.user !== req?.user?._id)
-      return res.status(401).send("Not Authorized");
     await Profile.deleteOne({ _id: profileId });
     res.status(201).send("profile deleted successfully");
   } catch (error) {
