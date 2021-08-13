@@ -1,29 +1,51 @@
 const mongoose = require("mongoose");
 
 const positionsSchema = new mongoose.Schema({
-  name: String,
-  type: String,
-  start: String,
-  end: String,
-  duration: String,
-  place: String,
+  title: String,
+  employment_type: String,
+  start_date: {
+    month: Number,
+    year: Number,
+  },
+  end_date: {
+    month: Number,
+    year: Number,
+  },
+
+  location: String,
+  description: {
+    type: String,
+    maxLength: 2000,
+  },
 });
 
 const experienceSchema = new mongoose.Schema({
-  company: String,
-  duration: String,
-  companyLogo: String,
+  company_name: String,
   positions: [positionsSchema],
 });
 
 const educationSchema = new mongoose.Schema({
   school: String,
-  schoolImage: String,
 
   degree: String,
-  field: String,
-  start: String,
-  end: String,
+  field_of_study: String,
+  start_date: {
+    month: Number,
+    year: Number,
+  },
+  end_date: {
+    month: Number,
+    year: Number,
+  },
+  grade: String,
+  activities_and_societies: {
+    type: String,
+    maxLength: 500,
+  },
+  description: {
+    type: String,
+    maxLength: 1000,
+  },
 });
 
 const profileSchema = new mongoose.Schema(
@@ -55,7 +77,7 @@ const profileSchema = new mongoose.Schema(
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Users",
+      ref: "User",
     },
   },
   {
