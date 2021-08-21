@@ -5,10 +5,12 @@ const userRoute = require("./routes/user");
 const profileRoute = require("./routes/profile");
 
 const verifyToken = require("./middlewares/auth");
-
+const cors = require("cors");
 const express = require("express");
 
 const app = express();
+
+app.use(cors());
 
 //parse incoming request body as payload
 app.use(express.json());
