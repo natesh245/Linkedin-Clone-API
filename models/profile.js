@@ -30,12 +30,12 @@ const educationSchema = new mongoose.Schema({
   degree: String,
   field_of_study: String,
   start_date: {
-    month: Number,
-    year: Number,
+    month: String,
+    year: String,
   },
   end_date: {
-    month: Number,
-    year: Number,
+    month: String,
+    year: String,
   },
   grade: String,
   activities_and_societies: {
