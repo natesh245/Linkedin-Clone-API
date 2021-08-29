@@ -116,9 +116,10 @@ router.put("/:profileId", isUserAuthorized, async (req, res) => {
     const updatedProfile = await Profile.findByIdAndUpdate(profileId, {
       ...req.body,
     });
+    const updateDoc = await Profile.findOne({ _id: profileId }).lean();
     if (updatedProfile)
       res.status(200).json({
-        data: { ...updatedProfile._doc, ...req.body },
+        data: { ...updateDoc },
         status: 200,
         message: "profile updated successfully",
       });

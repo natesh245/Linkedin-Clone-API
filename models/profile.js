@@ -4,12 +4,12 @@ const positionsSchema = new mongoose.Schema({
   title: String,
   employment_type: String,
   start_date: {
-    month: Number,
-    year: Number,
+    month: String,
+    year: String,
   },
   end_date: {
-    month: Number,
-    year: Number,
+    month: String,
+    year: String,
   },
 
   location: String,
