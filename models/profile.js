@@ -69,6 +69,9 @@ const profileSchema = new mongoose.Schema(
       type: String,
       maxLength: 2600,
     },
+    avatarUrl: {
+      type: String,
+    },
     experience: {
       type: [experienceSchema],
     },
