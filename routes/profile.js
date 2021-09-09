@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const Profile = require("../models/profile");
+const User = require("../models/user");
 const isUserAuthorized = require("../middlewares/profile");
 
 router.get("/", async (req, res) => {
@@ -12,6 +13,47 @@ router.get("/", async (req, res) => {
       data: profiles,
       status: 200,
       message: "profiles fetched sucessfully",
+    });
+  } catch (error) {
+    res.status(500).json({ status: 500, data: null, message: error });
+  }
+});
+
+router.get("/search", async (req, res) => {
+  try {
+    const searchQuery = req.query.search;
+    if (!searchQuery)
+      return res.status(400).json({
+        data: null,
+        status: 400,
+        message: "search query is required",
+      });
+    const userResults = await User.find({
+      first_name: `${searchQuery.split(" ")[0]}`,
+      last_name: `${searchQuery.split(" ")[1]}`,
+    }).lean();
+
+    if (userResults.length === 0)
+      return res.status(200).json({
+        data: [],
+        status: 200,
+        message: "search result fetched sucessfully",
+      });
+
+    let userIds = userResults.map((user) => user._id);
+    const searchResults = await Profile.find(
+      { user: { $in: userIds } },
+      { headline: 1, avatarUrl: 1, user: 1 }
+    )
+      .populate({
+        path: "user",
+        select: "first_name last_name email_id headline",
+      })
+      .lean();
+    res.status(200).json({
+      data: searchResults,
+      status: 200,
+      message: "search result fetched sucessfully",
     });
   } catch (error) {
     res.status(500).json({ status: 500, data: null, message: error });
