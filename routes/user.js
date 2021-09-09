@@ -60,6 +60,11 @@ router.post("/register", async (req, res) => {
     const hashedPassword = await bcrypt.hash(user.password, salt);
     user.password = hashedPassword;
     const savedUser = await user.save();
+    if (savedUser) {
+      const profile = new Profile({ user: savedUser._doc._id });
+      await profile.save();
+    }
+
     const token = await generateToken(savedUser._doc);
     savedUser._doc.token = token;
     res.status(201).json({
