@@ -31,6 +31,7 @@ router.get("/search", async (req, res) => {
       });
 
     const userResults = await User.find({
+      _id: { $ne: req.user._id },
       $or: [
         {
           first_name: {
