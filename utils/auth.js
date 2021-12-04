@@ -13,9 +13,13 @@ async function hashPassword(password) {
 }
 
 async function generateToken(payload) {
-  const token = jwt.sign({ ...payload, password: null }, "secret", {
-    expiresIn: "2h",
-  });
+  const token = jwt.sign(
+    { ...payload, password: null },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: "2h",
+    }
+  );
 
   return token;
 }
