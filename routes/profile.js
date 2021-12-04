@@ -2,6 +2,7 @@ const router = require("express").Router();
 const Profile = require("../models/profile");
 const User = require("../models/user");
 const isUserAuthorized = require("../middlewares/profile");
+const profile = require("../models/profile");
 
 router.get("/", async (req, res) => {
   try {
@@ -79,9 +80,12 @@ router.get("/:profileId", async (req, res) => {
       });
     const profile = await Profile.findOne({ _id: profileId })
       .lean()
-      .populate({ path: "user", select: "first_name last_name email_id" });
+      .populate({ path: "user", select: "_id first_name last_name email_id" });
     res.status(200).json({
-      data: { ...profile, isCurrentUserProfile: profile.user === req.user._id },
+      data: {
+        ...profile,
+        isCurrentUserProfile: String(profile.user._id) === req.user._id,
+      },
       status: 200,
       message: "profile fetched sucessfully",
     });
@@ -148,7 +152,7 @@ router.post("/:userId", async (req, res) => {
     });
     const savedProfile = await userProfile.save();
     res.status(200).json({
-      data: savedProfile,
+      data: { ...savedProfile, isCurrentUserProfile: userId === req.user._id },
       status: 200,
       message: "profile saved successfully",
     });
@@ -172,7 +176,10 @@ router.put("/:profileId", isUserAuthorized, async (req, res) => {
     const updateDoc = await Profile.findOne({ _id: profileId }).lean();
     if (updatedProfile)
       res.status(200).json({
-        data: { ...updateDoc },
+        data: {
+          ...updateDoc,
+          isCurrentUserProfile: String(updateDoc.user) === req.user._id,
+        },
         status: 200,
         message: "profile updated successfully",
       });
