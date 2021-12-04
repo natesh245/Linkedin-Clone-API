@@ -81,7 +81,7 @@ router.get("/:profileId", async (req, res) => {
       .lean()
       .populate({ path: "user", select: "first_name last_name email_id" });
     res.status(200).json({
-      data: profile,
+      data: { ...profile, isCurrentUserProfile: profile.user === req.user._id },
       status: 200,
       message: "profile fetched sucessfully",
     });
@@ -108,7 +108,10 @@ router.get("/user/:userId", async (req, res) => {
     }
 
     res.status(200).json({
-      data: existingUserProfile,
+      data: {
+        ...existingUserProfile,
+        isCurrentUserProfile: userId === req.user._id,
+      },
       status: 200,
       message: "profile updated successfully",
     });
