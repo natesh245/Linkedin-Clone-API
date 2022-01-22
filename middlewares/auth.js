@@ -9,7 +9,7 @@ function verifyToken(req, res, next) {
         status: 400,
         message: "Bad Request- missing token",
       });
-    const decodedToken = jwt.verify(token, "secret");
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decodedToken;
     return next();
   } catch (error) {
