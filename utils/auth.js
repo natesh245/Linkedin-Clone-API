@@ -14,7 +14,7 @@ async function hashPassword(password) {
 
 async function generateToken(payload) {
   const token = jwt.sign(
-    { ...payload, password: null },
+    { _id: payload._id, isAdmin: payload.isAdmin },
     process.env.JWT_SECRET,
     {
       expiresIn: "2h",
